@@ -20,7 +20,7 @@ namespace MyStore
             int i=0;
             while (i != 4)
             {
-                Console.WriteLine("\nWhat would you like to do?");
+                design.colourCyan("\nWhat would you like to do?\n");
                 Console.WriteLine("0. Show Product(s) List");
                 Console.WriteLine("1. Add to Cart");
                 Console.WriteLine("2. View Cart");
@@ -104,14 +104,41 @@ namespace MyStore
         }
         public void PlaceOrder()
         {
-            SqlCommand cmd = new SqlCommand("[dbo].[PlaceOrder]", conn);
-            cmd.CommandType = CommandType.StoredProcedure;
+            SqlCommand cmd = new SqlCommand("[dbo].[PlaceOrder]", conn)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
             cmd.Parameters.AddWithValue("@Username", Session.Username);
+
             try
             {
                 conn.Open();
-                string resultMessage = (string)cmd.ExecuteScalar();
-                design.colourBlue(resultMessage);
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.HasRows && reader.Read())
+                {
+                    string resultMessage = reader["Result"].ToString();
+                    if (resultMessage != "Cart is empty. Cannot place an order.")
+                    {
+                        string orderedProducts = reader["OrderDetails"].ToString();
+                        decimal totalCost = Convert.ToDecimal(reader["TotalCost"]);
+                        DateTime orderDate = Convert.ToDateTime(reader["OrderDate"]);
+
+                        design.colourGreen(resultMessage + "\n");
+                        design.colourCyan("\nOrder Details:");
+                        design.colourGreen($"\nProducts Ordered: {orderedProducts}");
+                        design.colourGreen($"\nTotal Cost: ${totalCost}");
+                        design.colourGreen($"\nOrder Date: {orderDate}\n");
+                    }
+                    else
+                    {
+                        design.colourRed(resultMessage + "\n");
+                    }
+                }
+                else
+                {
+                    design.colourRed("No order details available. Something went wrong.\n");
+                }
             }
             catch (Exception ex)
             {
@@ -122,5 +149,6 @@ namespace MyStore
                 conn.Close();
             }
         }
+
     }
 }
