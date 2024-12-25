@@ -13,7 +13,7 @@ namespace MyStore
         }
         public bool UserValidate()
         {
-            Console.Write("Enter Username: ");
+            design.colourYellow("Enter Username: ");
             string username = Console.ReadLine();
             Console.Write("Enter Password: ");
             string password = Console.ReadLine();

@@ -14,8 +14,8 @@ namespace MyStore
         }
         public bool VerifyUser()
         {
-            Console.WriteLine("Welcome To MyStore.com");
-            Console.WriteLine("\nDo you have login credentials? (Yes/No)");
+            design.colourCyan("Welcome To MyStore.com");
+            design.colourCyan("\nDo you have login credentials? (Yes/No)");
             string input = Console.ReadLine().ToLower();
 
             if (input == "yes")
@@ -24,12 +24,12 @@ namespace MyStore
             }
             else if (input == "no")
             {
-                Console.WriteLine("\n--------------User Registration--------------");
+                design.colourGreen("\n--------------User Registration--------------");
                 return userManagement.RegisterUser();
             }
             else
             {
-                Console.WriteLine("Invalid input. Please enter 'Yes' or 'No'.");
+                design.colourRed("Invalid input. Please enter 'Yes' or 'No'.");
                 return false;
             }
         }

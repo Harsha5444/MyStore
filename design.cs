@@ -43,5 +43,12 @@ namespace MyStore
             Console.WriteLine(text);
             Console.ResetColor();
         }
+
+        public static void colourYellow(string text)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(text);
+            Console.ResetColor();
+        }
     }
 }
