@@ -19,7 +19,7 @@ namespace MyStore
                     DisplayProductList productList = new DisplayProductList(conn);
                     productList.ShowProductList();
                     shop.Menu();
-                    return; 
+                    break; 
                 }
                 else
                 {
