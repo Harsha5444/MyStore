@@ -28,26 +28,32 @@ namespace MyStore
         public static void colourRed(string text)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(text);
+            Console.Write(text);
             Console.ResetColor();
         }
         public static void colourGreen(string text)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(text);
+            Console.Write(text);
             Console.ResetColor();
         }
         public static void colourCyan(string text)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(text);
+            Console.Write(text);
             Console.ResetColor();
         }
 
         public static void colourYellow(string text)
         {
             Console.ForegroundColor = ConsoleColor.DarkYellow;
-            Console.WriteLine(text);
+            Console.Write(text);
+            Console.ResetColor();
+        }
+        public static void colourBlue(string text)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write(text);
             Console.ResetColor();
         }
     }

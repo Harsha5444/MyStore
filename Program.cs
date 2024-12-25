@@ -19,9 +19,8 @@ namespace MyStore
             }
             else
             {
-                design.colourRed("Login/Registration failed. Exiting program.");
+                design.colourRed("\nLogin/Registration failed.\nExiting program.");
             }
-            Console.Read();
         }
     }        
 }

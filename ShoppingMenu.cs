@@ -26,7 +26,7 @@ namespace MyStore
                 Console.WriteLine("2. View Cart");
                 Console.WriteLine("3. Place Order");
                 Console.WriteLine("4. Exit");
-                Console.Write($"Press any of (1, 2, 3, 4)..!  \n");
+                Console.Write($"Press any of (0, 1, 2, 3, 4) : ");
                 i = Convert.ToInt32(Console.ReadLine());
 
                 switch (i)
@@ -62,12 +62,12 @@ namespace MyStore
                 conn.Open();
                 cmd.Parameters.AddWithValue("@Username", Session.Username);
                 SqlDataReader reader = cmd.ExecuteReader();
+                design.colourCyan("Your Cart: \n");
                 design.DisplayTable(reader);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                design.colourRed($"Error: {ex.Message}\n");
             }
             finally
             {
@@ -76,9 +76,11 @@ namespace MyStore
         }
         public void AddToCart()
         {
-            Console.Write("Enter ProductID: \n");
+            DisplayProductList productList = new DisplayProductList(conn);
+            productList.ShowProductList();
+            design.colourYellow("Enter ProductID: ");
             int id = Convert.ToInt32(Console.ReadLine());
-            Console.Write("Enter Quantity: \n");
+            design.colourYellow("Enter Quantity: ");
             int q = Convert.ToInt32(Console.ReadLine());
             SqlCommand cmd = new SqlCommand("[dbo].[AddToCart]", conn);
             cmd.CommandType = CommandType.StoredProcedure;
@@ -89,12 +91,11 @@ namespace MyStore
             {
                 conn.Open();
                 string resultMessage = (string)cmd.ExecuteScalar();
-                Console.WriteLine(resultMessage);
+                design.colourBlue(resultMessage);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                design.colourRed($"Error: {ex.Message}\n");
             }
             finally
             {
@@ -110,12 +111,11 @@ namespace MyStore
             {
                 conn.Open();
                 string resultMessage = (string)cmd.ExecuteScalar();
-                Console.WriteLine(resultMessage);
+                design.colourBlue(resultMessage);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                design.colourRed($"Error: {ex.Message}\n");
             }
             finally
             {

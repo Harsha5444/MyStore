@@ -20,13 +20,12 @@ namespace MyStore
             {
                 conn.Open();
                 SqlDataReader reader = cmd.ExecuteReader();
-                Console.WriteLine("Product List: ");
+                design.colourCyan("\nProduct List: \n");
                 design.DisplayTable(reader);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.WriteLine(ex.StackTrace);
+                design.colourRed($"Error: {ex.Message}");
             }
             finally
             {

@@ -15,7 +15,7 @@ namespace MyStore
         {
             design.colourYellow("Enter Username: ");
             string username = Console.ReadLine();
-            Console.Write("Enter Password: ");
+            design.colourYellow("Enter Password: ");
             string password = Console.ReadLine();
 
             SqlCommand cmd = new SqlCommand("[dbo].[UserLogin]", conn);
@@ -40,7 +40,7 @@ namespace MyStore
             }
             catch (Exception ex)
             {
-                design.colourRed($"Error: {ex.Message}");
+                design.colourRed($"Error: {ex.Message}\n");
                 return false;
             }
             finally
@@ -50,13 +50,13 @@ namespace MyStore
         }
         public bool RegisterUser()
         {
-            Console.Write("Enter Full Name: ");
+            design.colourYellow("Enter Full Name: ");
             string fullName = Console.ReadLine();
-            Console.Write("Enter Username: ");
+            design.colourYellow("Enter Username: ");
             string username = Console.ReadLine();
-            Console.Write("Enter Password: ");
+            design.colourYellow("Enter Password: ");
             string password = Console.ReadLine();
-            Console.Write("Enter Mobile Number: ");
+            design.colourYellow("Enter Mobile Number: ");
             string mobileNumber = Console.ReadLine();
 
             SqlCommand cmd = new SqlCommand("[dbo].[RegisterUser]", conn);
@@ -79,13 +79,13 @@ namespace MyStore
                 }
                 else
                 {
-                    Console.WriteLine("Error: The username already exists. Please choose a different username.");
+                    design.colourRed("\nError: The username already exists. Please choose a different username.");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                design.colourRed($"An error occurred: {ex.Message}");
+                design.colourRed($"\nAn error occurred: {ex.Message}");
                 return false;
             }
             finally
