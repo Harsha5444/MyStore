@@ -62,8 +62,15 @@ namespace MyStore
                 conn.Open();
                 cmd.Parameters.AddWithValue("@Username", Session.Username);
                 SqlDataReader reader = cmd.ExecuteReader();
-                design.colourCyan("Your Cart: \n");
-                design.DisplayTable(reader);
+                if (reader.HasRows)
+                {
+                    design.colourCyan("\nYour Cart: \n");
+                    design.DisplayTable(reader);
+                }
+                else
+                {
+                    design.colourRed("\nYour Cart is Empty..! Place a Product to View Cart.\n");
+                }
             }
             catch (Exception ex)
             {
@@ -124,15 +131,16 @@ namespace MyStore
                         decimal totalCost = Convert.ToDecimal(reader["TotalCost"]);
                         DateTime orderDate = Convert.ToDateTime(reader["OrderDate"]);
 
-                        design.colourGreen(resultMessage + "\n");
+                        design.colourGreen("\n" + resultMessage + "\n");
                         design.colourCyan("\nOrder Details:");
-                        design.colourGreen($"\nProducts Ordered: {orderedProducts}");
-                        design.colourGreen($"\nTotal Cost: ${totalCost}");
-                        design.colourGreen($"\nOrder Date: {orderDate}\n");
+                        design.colourGreen($"\nProducts Ordered:".PadRight(20) + orderedProducts);
+                        design.colourGreen($"\nTotal Cost:".PadRight(20) + $"${totalCost}");
+                        design.colourGreen($"\nOrder Date:".PadRight(20) + orderDate.ToString());
+
                     }
                     else
                     {
-                        design.colourRed(resultMessage + "\n");
+                        design.colourRed("\n" + resultMessage + "\n");
                     }
                 }
                 else

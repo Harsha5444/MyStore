@@ -1,12 +1,63 @@
-﻿
+﻿USE [MiniProjectDB]
+GO
+/****** Object:  StoredProcedure [dbo].[ViewOrders]    Script Date: 25-12-2024 10:49:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROCEDURE [dbo].[ViewOrders]
     @Username NVARCHAR(100)
 AS
 BEGIN
     SELECT * FROM Orders WHERE Username = @Username;
 END
-
-
+----------------------------------------------------------------------------------------------------
+USE [MiniProjectDB]
+GO
+/****** Object:  StoredProcedure [dbo].[ViewCart]    Script Date: 25-12-2024 10:49:10 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[ViewCart]
+    @Username NVARCHAR(50)
+AS
+BEGIN
+    SELECT c.CartId, p.ProductName, c.Quantity, c.FinalPrice
+    FROM Cart c
+    JOIN Products p ON c.ProductId = p.ProductId
+    WHERE c.Username = @Username;
+END;
+----------------------------------------------------------------------------------------------------
+USE [MiniProjectDB]
+GO
+/****** Object:  StoredProcedure [dbo].[UserLogin]    Script Date: 25-12-2024 10:49:07 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[UserLogin]
+    @Username NVARCHAR(50),
+    @Password NVARCHAR(50)
+AS
+BEGIN
+    IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username AND Password = @Password)
+    BEGIN
+        SELECT 1 AS LoginResult; -- Indicates success
+    END
+    ELSE
+    BEGIN
+        SELECT 0 AS LoginResult; -- Indicates failure
+    END
+END;
+----------------------------------------------------------------------------------------------------
+USE [MiniProjectDB]
+GO
+/****** Object:  StoredProcedure [dbo].[RegisterUser]    Script Date: 25-12-2024 10:49:04 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROCEDURE [dbo].[RegisterUser]
     @FullName NVARCHAR(100),
     @Username NVARCHAR(50),
@@ -28,62 +79,60 @@ BEGIN
     -- Return success
     SELECT 1 AS RegistrationStatus; -- 1 indicates success
 END;
-
-ALTER PROCEDURE [dbo].[ViewCart]
-    @Username NVARCHAR(50)
-AS
-BEGIN
-    SELECT c.CartId, p.ProductName, c.Quantity, c.FinalPrice
-    FROM Cart c
-    JOIN Products p ON c.ProductId = p.ProductId
-    WHERE c.Username = @Username;
-END;
-
-ALTER PROCEDURE [dbo].[UserLogin]
-    @Username NVARCHAR(50),
-    @Password NVARCHAR(50)
-AS
-BEGIN
-    IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username AND Password = @Password)
-    BEGIN
-        SELECT 1 AS LoginResult; -- Indicates success
-    END
-    ELSE
-    BEGIN
-        SELECT 0 AS LoginResult; -- Indicates failure
-    END
-END;
-
-
+----------------------------------------------------------------------------------------------------
+USE [MiniProjectDB]
+GO
+/****** Object:  StoredProcedure [dbo].[PlaceOrder]    Script Date: 25-12-2024 10:49:02 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROCEDURE [dbo].[PlaceOrder]
     @Username NVARCHAR(50)
 AS
 BEGIN
-    DECLARE @TotalCost INT;
+    DECLARE @TotalCost DECIMAL(10, 2);
+    DECLARE @OrderDetails NVARCHAR(MAX);
 
-     --Calculate Total Cost
-    SELECT @TotalCost = SUM(FinalPrice)
-    FROM Cart
-    WHERE Username = @Username;
+    -- Calculate the total cost and get order details
+    SELECT 
+        @TotalCost = SUM(FinalPrice),
+        @OrderDetails = STRING_AGG(CONCAT(ProductName, ' x ', Quantity), ', ')
+    FROM 
+        Cart c
+    INNER JOIN 
+        Products p ON c.ProductId = p.ProductId
+    WHERE 
+        Username = @Username;
 
-    IF @TotalCost is null
+    IF @TotalCost IS NULL
     BEGIN
-        select 'Cart is empty.' as Result;
+        SELECT 'Cart is empty. Cannot place an order.' AS Result;
         RETURN;
     END
 
-     --Insert into Orders
-    INSERT INTO Orders (Username, TotalCost)
-    VALUES (@Username, @TotalCost);
+    -- Insert the order into the Orders table
+    INSERT INTO Orders (Username, TotalCost, OrderDate, OrderDetails)
+    VALUES (@Username, @TotalCost, GETDATE(), @OrderDetails);
 
-     --Clear User Cart
-    DELETE FROM Cart
-    WHERE Username = @Username;
+    -- Clear the user's cart after placing the order
+    DELETE FROM Cart WHERE Username = @Username;
 
-    select 'Order placed successfully. ' AS Result;
-END;
-
-
+    -- Return the order details
+    SELECT 
+        'Order placed successfully!' AS Result, 
+        @OrderDetails AS OrderDetails, 
+        @TotalCost AS TotalCost, 
+        GETDATE() AS OrderDate;
+END
+----------------------------------------------------------------------------------------------------
+USE [MiniProjectDB]
+GO
+/****** Object:  StoredProcedure [dbo].[GetProductList]    Script Date: 25-12-2024 10:48:59 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROCEDURE [dbo].[GetProductList]
 AS
 BEGIN
@@ -91,8 +140,14 @@ BEGIN
     FROM Products
     WHERE QuantityAvailable > 0;
 END;
-
-
+----------------------------------------------------------------------------------------------------
+USE [MiniProjectDB]
+GO
+/****** Object:  StoredProcedure [dbo].[AddToCart]    Script Date: 25-12-2024 10:48:56 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 ALTER PROCEDURE [dbo].[AddToCart]
     @ProductId INT,
     @Username NVARCHAR(50),
@@ -101,16 +156,26 @@ AS
 BEGIN
     DECLARE @Price INT, @AvailableQty INT;
 
+    -- Fetch Price and Available Quantity
     SELECT @Price = Price, @AvailableQty = QuantityAvailable 
     FROM Products 
     WHERE ProductId = @ProductId;
 
+    -- Check if ProductId is invalid
     IF @Price IS NULL
     BEGIN
         SELECT 'Please Enter a Valid ProductID' AS Result;
         RETURN;
     END
 
+    -- Check if product is out of stock
+    IF @AvailableQty <= 0
+    BEGIN
+        SELECT 'This product is out of stock and cannot be added to the cart.' AS Result;
+        RETURN;
+    END
+
+    -- Check if requested quantity exceeds available stock
     IF @AvailableQty < @Quantity
     BEGIN
         SELECT 'Insufficient stock.' AS Result;
@@ -130,4 +195,5 @@ BEGIN
     WHERE ProductId = @ProductId;
 
     SELECT 'Successfully Added Product to Your Cart..!' AS Result;
-END
+END;
+----------------------------------------------------------------------------------------------------
