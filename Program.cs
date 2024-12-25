@@ -11,16 +11,30 @@ namespace MyStore
             SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["MiniProjectDB"].ConnectionString);
             LoginVerification login = new LoginVerification(conn);
             ShoppingMenu shop = new ShoppingMenu(conn);
-            if (login.VerifyUser())
+            int attempts = 0; 
+            while (attempts < 2)
             {
-                DisplayProductList productList = new DisplayProductList(conn);
-                productList.ShowProductList();
-                shop.Menu();
+                if (login.VerifyUser()) 
+                {
+                    DisplayProductList productList = new DisplayProductList(conn);
+                    productList.ShowProductList();
+                    shop.Menu();
+                    return; 
+                }
+                else
+                {
+                    attempts++; 
+                    if (attempts == 1)
+                    {
+                        design.colourRed("\nLogin failed. Please try again.\n");
+                    }
+                    else
+                    {
+                        design.colourRed("\nLogin failed. Too many attempts. Exiting program.\n");
+                    }
+                }
             }
-            else
-            {
-                design.colourRed("\nLogin/Registration failed.\nExiting program.");
-            }
+            Console.Read(); 
         }
-    }        
+    }
 }

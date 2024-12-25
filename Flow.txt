@@ -1,0 +1,70 @@
+                        +-------------------+
+                        |   Main Program    |
+                        +-------------------+
+                                 |
+                                 v
+                     +------------------------+
+                     |   LoginVerification    |  <-- Calls: UserManagement.UserValidate()
+                     +------------------------+
+                                 |
+                                 v
+                     +----------------------+
+                     |    UserManagement    |  <-- Calls: Database for validation
+                     +----------------------+
+                                 |
+                                 v
+                       +-----------------------+
+                       |    Login Success?     |
+                       +-----------------------+
+                          /        \
+                      Yes          No
+                       |            |
+                       v            v
+             +-------------------+  +------------------------+
+             | DisplayProductList |  |   design               |  <-- Display Error (Invalid Credentials)
+             +-------------------+  +------------------------+
+                       |                         |
+                       v                         v
+              +---------------------+    Prompt to Try Again
+              |   ShoppingMenu      |          |
+              +---------------------+          v
+                       |                  Return to Login
+                       v
+        +-------------------------------+
+        | User Selects Action (Add to Cart, View Cart, Place Order) |
+        +-------------------------------+
+                       |
+                       v
+            +--------------------------+       
+            |           |              |
+            v           v              v
+    +------------------+   +------------------+   +-------------------+
+    |   AddToCart()    |   |   ViewCart()      |   |   PlaceOrder()    |  <-- Calls: PlaceOrder USP
+    |  <-- Calls: AddToCart USP |  <-- Calls: ViewCart USP | 
+    +------------------+   +------------------+   +-------------------+
+            |                    |                     |
+            v                    v                     v
+    Product Added to Cart   Display Cart Items     Cart Empty?     
+            |                    |                     |
+            v                    v                     v
+    +------------------+    +------------------+   +-------------------+
+    |   PlaceOrder()   |    |   design         |   |  Yes             |   
+    |  <-- Calls: PlaceOrder USP  |  <-- Display Error  |                 |
+    +------------------+    |   (Cart Empty)    |   v                 |
+            |                +------------------+   +-------------------+
+            v                        |               |   design          |
+   Cart Empty?        No              |               |   Display Error   |
+    |                  |               |               |   (Cart Empty)    |
+    v                  v               |               +-------------------+
++-------------------+ +--------------------+              |
+| Order Confirmed   | | Cart Cleared       |     Prompt to Add Items to Cart
++-------------------+ +--------------------+              |
+            |                 |                              v
+            v                 v                       Return to Shopping Menu
+    +-------------------+  +-------------------------+
+    |   design          |  | Finalize Order          |
+    |  (colourGreen())  |  +-------------------------+
+    +-------------------+
+            |
+            v
+    Cart Cleared

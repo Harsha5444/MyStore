@@ -1,0 +1,47 @@
+
+Tables
+select * from [dbo].[Cart]
+select * from [dbo].[Orders]
+select * from [dbo].[Products]
+select * from [dbo].[Users]
+
+Stored Procedures (USPs)
+
+1. UserLogin: Validates user login.
+2. RegisterUser: Registers new users.
+3. GetProductList: Fetches all products.
+4. AddToCart: Adds products to the cart.
+5. ViewCart: Retrieves user’s cart.
+6. PlaceOrder: Places an order and clears the cart.
+
+Classes & Methods
+
+1. LoginVerification
+   - `VerifyUser()`: Handles login and registration flow.
+
+2. UserManagement
+   - `UserValidate()`: Validates user login credentials.
+   - `RegisterUser()`: Registers a new user.
+
+3. DisplayProductList
+   - `ShowProductList()`: Displays available products.
+
+4. ShoppingMenu
+   - `Menu()`: Main menu for the shopping operations.
+   - `AddToCart()`: Adds items to the cart.
+   - `ViewCart()`: Displays items in the cart.
+   - `PlaceOrder()`: Finalizes and places an order.
+
+5. Session
+   - Static property: `Username` (stores the currently logged-in user's username).
+
+6. design
+   - Utility class for displaying text in colors (`colourRed()`, `colourGreen()`, etc.) and formatting the console output (`DisplayTable()`).
+
+Execution Flow
+
+- User Login/Register: Handled by `LoginVerification.VerifyUser()` and `UserManagement.UserValidate()`/`RegisterUser()`.
+- Product Selection: `DisplayProductList.ShowProductList()` displays the products.
+- Cart Management: `ShoppingMenu.AddToCart()`, `ShoppingMenu.ViewCart()` manage cart items.
+- Order Placement: `ShoppingMenu.PlaceOrder()` places the order and clears the cart.
+
