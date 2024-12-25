@@ -45,10 +45,10 @@ namespace MyStore
                         PlaceOrder();
                         break;
                     case 4:
-                        design.colourCyan("Thank you for Visiting MyStore.com. Bye Bye..!");
+                        design.colourCyan("\nThank you for Visiting MyStore.com. Bye Bye..!");
                         break;
                     default:
-                        design.colourRed("Please Choose a Valid Option!!");
+                        design.colourRed("\nPlease Choose a Valid Option!!");
                         break;
                 }
             }
