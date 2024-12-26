@@ -72,7 +72,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="TextFile1.txt" />
+    <Content Include="procedures.txt" />
+    <Content Include="classes,methods.txt" />
+    <Content Include="flowofcode.txt" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

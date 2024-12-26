@@ -1,4 +1,4 @@
-Project - Details
+﻿Project - Details
 
 Tables
 select * from [dbo].[Cart]
