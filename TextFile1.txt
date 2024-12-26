@@ -1,199 +1,142 @@
-﻿USE [MiniProjectDB]
-GO
-/****** Object:  StoredProcedure [dbo].[ViewOrders]    Script Date: 25-12-2024 10:49:13 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[ViewOrders]
-    @Username NVARCHAR(100)
-AS
-BEGIN
-    SELECT * FROM Orders WHERE Username = @Username;
-END
+﻿alter procedure [dbo].[vieworders]
+    @username nvarchar(100)
+as
+begin
+    select * from orders where username = @username;
+end
 ----------------------------------------------------------------------------------------------------
-USE [MiniProjectDB]
-GO
-/****** Object:  StoredProcedure [dbo].[ViewCart]    Script Date: 25-12-2024 10:49:10 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[ViewCart]
-    @Username NVARCHAR(50)
-AS
-BEGIN
-    SELECT c.CartId, p.ProductName, c.Quantity, c.FinalPrice
-    FROM Cart c
-    JOIN Products p ON c.ProductId = p.ProductId
-    WHERE c.Username = @Username;
-END;
+
+alter procedure [dbo].[viewcart]
+    @username nvarchar(50)
+as
+begin
+    select c.cartid, p.productname, c.quantity, c.finalprice
+    from cart c
+    join products p on c.productid = p.productid
+    where c.username = @username;
+end;
 ----------------------------------------------------------------------------------------------------
-USE [MiniProjectDB]
-GO
-/****** Object:  StoredProcedure [dbo].[UserLogin]    Script Date: 25-12-2024 10:49:07 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[UserLogin]
-    @Username NVARCHAR(50),
-    @Password NVARCHAR(50)
-AS
-BEGIN
-    IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username AND Password = @Password)
-    BEGIN
-        SELECT 1 AS LoginResult; -- Indicates success
-    END
-    ELSE
-    BEGIN
-        SELECT 0 AS LoginResult; -- Indicates failure
-    END
-END;
+
+alter procedure [dbo].[userlogin]
+    @username nvarchar(50),
+    @password nvarchar(50)
+as
+begin
+    if exists (select 1 from users where username = @username and password = @password)
+    begin
+        select 1 as loginresult;
+    end
+    else
+    begin
+        select 0 as loginresult;
+    end
+end;
 ----------------------------------------------------------------------------------------------------
-USE [MiniProjectDB]
-GO
-/****** Object:  StoredProcedure [dbo].[RegisterUser]    Script Date: 25-12-2024 10:49:04 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[RegisterUser]
-    @FullName NVARCHAR(100),
-    @Username NVARCHAR(50),
-    @Password NVARCHAR(50),
-    @MobileNumber NVARCHAR(15)
-AS
-BEGIN
-    IF EXISTS (SELECT 1 FROM Users WHERE Username = @Username)
-    BEGIN
-        -- Instead of raising an error, return a status code
-        SELECT 0 AS RegistrationStatus; -- 0 indicates failure (username already exists)
-        RETURN;
-    END
 
-    -- Insert the new user if username does not exist
-    INSERT INTO Users (FullName, Username, Password, MobileNumber)
-    VALUES (@FullName, @Username, @Password, @MobileNumber);
+alter procedure [dbo].[registeruser]
+    @fullname nvarchar(100),
+    @username nvarchar(50),
+    @password nvarchar(50),
+    @mobilenumber nvarchar(15)
+as
+begin
+    if exists (select 1 from users where username = @username)
+    begin
+        select 0 as registrationstatus;
+        return;
+    end
 
-    -- Return success
-    SELECT 1 AS RegistrationStatus; -- 1 indicates success
-END;
+    insert into users (fullname, username, password, mobilenumber)
+    values (@fullname, @username, @password, @mobilenumber);
+
+    select 1 as registrationstatus;
+end;
 ----------------------------------------------------------------------------------------------------
-USE [MiniProjectDB]
-GO
-/****** Object:  StoredProcedure [dbo].[PlaceOrder]    Script Date: 25-12-2024 10:49:02 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[PlaceOrder]
-    @Username NVARCHAR(50)
-AS
-BEGIN
-    DECLARE @TotalCost DECIMAL(10, 2);
-    DECLARE @OrderDetails NVARCHAR(MAX);
 
-    -- Calculate the total cost and get order details
-    SELECT 
-        @TotalCost = SUM(FinalPrice),
-        @OrderDetails = STRING_AGG(CONCAT(ProductName, ' x ', Quantity), ', ')
-    FROM 
-        Cart c
-    INNER JOIN 
-        Products p ON c.ProductId = p.ProductId
-    WHERE 
-        Username = @Username;
+alter procedure [dbo].[placeorder]
+    @username nvarchar(50)
+as
+begin
+    declare @totalcost decimal(10, 2);
+    declare @orderdetails nvarchar(max);
 
-    IF @TotalCost IS NULL
-    BEGIN
-        SELECT 'Cart is empty. Cannot place an order.' AS Result;
-        RETURN;
-    END
+    select 
+        @totalcost = sum(finalprice),
+        @orderdetails = string_agg(concat(productname, ' x ', quantity), ', ')
+    from 
+        cart c
+    inner join 
+        products p on c.productid = p.productid
+    where 
+        username = @username;
 
-    -- Insert the order into the Orders table
-    INSERT INTO Orders (Username, TotalCost, OrderDate, OrderDetails)
-    VALUES (@Username, @TotalCost, GETDATE(), @OrderDetails);
+    if @totalcost is null
+    begin
+        select 'cart is empty. cannot place an order.' as result;
+        return;
+    end
 
-    -- Clear the user's cart after placing the order
-    DELETE FROM Cart WHERE Username = @Username;
+    insert into orders (username, totalcost, orderdate, orderdetails)
+    values (@username, @totalcost, getdate(), @orderdetails);
 
-    -- Return the order details
-    SELECT 
-        'Order placed successfully!' AS Result, 
-        @OrderDetails AS OrderDetails, 
-        @TotalCost AS TotalCost, 
-        GETDATE() AS OrderDate;
-END
+    delete from cart where username = @username;
+
+    select 
+        'order placed successfully!' as result, 
+        @orderdetails as orderdetails, 
+        @totalcost as totalcost, 
+        getdate() as orderdate;
+end;
 ----------------------------------------------------------------------------------------------------
-USE [MiniProjectDB]
-GO
-/****** Object:  StoredProcedure [dbo].[GetProductList]    Script Date: 25-12-2024 10:48:59 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[GetProductList]
-AS
-BEGIN
-    SELECT ProductId, ProductName, Price, QuantityAvailable
-    FROM Products
-    WHERE QuantityAvailable > 0;
-END;
+
+alter procedure [dbo].[getproductlist]
+as
+begin
+    select productid, productname, price, quantityavailable
+    from products
+    where quantityavailable > 0;
+end;
 ----------------------------------------------------------------------------------------------------
-USE [MiniProjectDB]
-GO
-/****** Object:  StoredProcedure [dbo].[AddToCart]    Script Date: 25-12-2024 10:48:56 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-ALTER PROCEDURE [dbo].[AddToCart]
-    @ProductId INT,
-    @Username NVARCHAR(50),
-    @Quantity INT
-AS
-BEGIN
-    DECLARE @Price INT, @AvailableQty INT;
 
-    -- Fetch Price and Available Quantity
-    SELECT @Price = Price, @AvailableQty = QuantityAvailable 
-    FROM Products 
-    WHERE ProductId = @ProductId;
+alter procedure [dbo].[addtocart]
+    @productid int,
+    @username nvarchar(50),
+    @quantity int
+as
+begin
+    declare @price int, @availableqty int;
 
-    -- Check if ProductId is invalid
-    IF @Price IS NULL
-    BEGIN
-        SELECT 'Please Enter a Valid ProductID' AS Result;
-        RETURN;
-    END
+    select @price = price, @availableqty = quantityavailable 
+    from products 
+    where productid = @productid;
 
-    -- Check if product is out of stock
-    IF @AvailableQty <= 0
-    BEGIN
-        SELECT 'This product is out of stock and cannot be added to the cart.' AS Result;
-        RETURN;
-    END
+    if @price is null
+    begin
+        select 'please enter a valid productid' as result;
+        return;
+    end
 
-    -- Check if requested quantity exceeds available stock
-    IF @AvailableQty < @Quantity
-    BEGIN
-        SELECT 'Insufficient stock.' AS Result;
-        RETURN;
-    END
+    if @availableqty <= 0
+    begin
+        select 'this product is out of stock and cannot be added to the cart.' as result;
+        return;
+    end
 
-    -- Calculate Final Price
-    DECLARE @FinalPrice INT = @Price * @Quantity;
+    if @availableqty < @quantity
+    begin
+        select 'insufficient stock.' as result;
+        return;
+    end
 
-    -- Insert into Cart
-    INSERT INTO Cart (ProductId, Username, Quantity, FinalPrice)
-    VALUES (@ProductId, @Username, @Quantity, @FinalPrice);
+    declare @finalprice int = @price * @quantity;
 
-    -- Reduce stock in Products
-    UPDATE Products
-    SET QuantityAvailable = QuantityAvailable - @Quantity
-    WHERE ProductId = @ProductId;
+    insert into cart (productid, username, quantity, finalprice)
+    values (@productid, @username, @quantity, @finalprice);
 
-    SELECT 'Successfully Added Product to Your Cart..!' AS Result;
-END;
+    update products
+    set quantityavailable = quantityavailable - @quantity
+    where productid = @productid;
+
+    select 'successfully added product to your cart..!' as result;
+end;
 ----------------------------------------------------------------------------------------------------
