@@ -32,10 +32,12 @@ namespace MyStore
                 switch (i)
                 {
                     case 0:
+                        Console.Clear();
                         DisplayProductList productList = new DisplayProductList(conn);
                         productList.ShowProductList();
                         break;
                     case 1:
+                        Console.Clear();
                         AddToCart();
                         break;
                     case 2:
@@ -55,6 +57,7 @@ namespace MyStore
         }
         public void ViewCart()
         {
+            Console.Clear();
             SqlCommand cmd = new SqlCommand("[dbo].[ViewCart]", conn);
             cmd.CommandType = CommandType.StoredProcedure;
             try
@@ -85,6 +88,7 @@ namespace MyStore
         {
             DisplayProductList productList = new DisplayProductList(conn);
             productList.ShowProductList();
+            design.colourCyan("Add Product To Cart: \n\n");
             design.colourYellow("Enter ProductID: ");
             int id = Convert.ToInt32(Console.ReadLine());
             design.colourYellow("Enter Quantity: ");
@@ -111,6 +115,7 @@ namespace MyStore
         }
         public void PlaceOrder()
         {
+            Console.Clear();
             SqlCommand cmd = new SqlCommand("[dbo].[PlaceOrder]", conn)
             {
                 CommandType = CommandType.StoredProcedure

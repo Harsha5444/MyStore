@@ -13,6 +13,7 @@ namespace MyStore
         }
         public bool UserValidate()
         {
+            design.colourCyan("--------------Login Page--------------\n");
             design.colourYellow("Enter Username: ");
             string username = Console.ReadLine();
             design.colourYellow("Enter Password: ");
@@ -29,6 +30,7 @@ namespace MyStore
                 int result = (int)cmd.ExecuteScalar(); 
                 if (result == 1)
                 {
+                    Console.Clear();
                     design.colourGreen("Login successful.\n");
                     Session.Username = username;
                     return true;
@@ -88,6 +90,7 @@ namespace MyStore
                 int result = (int)cmd.ExecuteScalar();
                 if (result == 1)
                 {
+                    Console.Clear();
                     design.colourGreen("User registered successfully!\n");
                     Session.Username = username;
                     return true;

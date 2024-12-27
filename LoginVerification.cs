@@ -20,10 +20,12 @@ namespace MyStore
 
             if (input == "yes")
             {
+                Console.Clear();
                 return userManagement.UserValidate();
             }
             else if (input == "no")
             {
+                Console.Clear();
                 design.colourGreen("\n--------------User Registration--------------\n");
                 return userManagement.RegisterUser();
             }
