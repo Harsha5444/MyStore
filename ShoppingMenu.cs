@@ -102,7 +102,8 @@ namespace MyStore
             {
                 conn.Open();
                 string resultMessage = (string)cmd.ExecuteScalar();
-                design.colourBlue(resultMessage);
+                Console.Clear();
+                design.colourMagenta(resultMessage);
             }
             catch (Exception ex)
             {

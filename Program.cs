@@ -26,7 +26,8 @@ namespace MyStore
                     attempts++; 
                     if (attempts == 1)
                     {
-                        design.colourRed("\nLogin failed. Please try again.\n");
+                        Console.Clear();
+                        design.colourRed("Login failed. Please try again.\n\n");
                     }
                     else
                     {

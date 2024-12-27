@@ -72,6 +72,8 @@ namespace MyStore
         public static string colourYellow(string text) => GetColoredText(text, ConsoleColor.DarkYellow);
 
         public static string colourBlue(string text) => GetColoredText(text, ConsoleColor.Blue);
+        public static string colourMagenta(string text) => GetColoredText(text, ConsoleColor.Magenta);
+
 
     }
 }
