@@ -54,8 +54,23 @@ namespace MyStore
             string fullName = Console.ReadLine();
             design.colourYellow("Enter Username: ");
             string username = Console.ReadLine();
-            design.colourYellow("Enter Password: ");
-            string password = Console.ReadLine();
+            string password = "";
+            string confirmPassword = "";
+            while (true)
+            {
+                design.colourYellow("Enter Password: ");
+                password = Console.ReadLine();
+                design.colourYellow("Confirm Password: ");
+                confirmPassword = Console.ReadLine();
+                if (password == confirmPassword)
+                {
+                    break; 
+                }
+                else
+                {
+                    design.colourRed("Passwords do not match. Please try again.\n");
+                }
+            }
             design.colourYellow("Enter Mobile Number: ");
             string mobileNumber = Console.ReadLine();
 
